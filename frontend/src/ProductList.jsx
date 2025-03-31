@@ -39,9 +39,9 @@ export default function ProductList({ onEdit }) {
     } else if (sortOption === "price-desc") {
       filtered.sort((a, b) => b.price - a.price);
     } else if (sortOption === "type-asc") {
-      filtered.sort((a, b) => a.type.localeCompare(b.type)); // A to Z
+      filtered.sort((a, b) => a.type.localeCompare(b.type));
     } else if (sortOption === "type-desc") {
-      filtered.sort((a, b) => b.type.localeCompare(a.type)); // Z to A
+      filtered.sort((a, b) => b.type.localeCompare(a.type));
     }
 
     setFilteredProducts(filtered);
