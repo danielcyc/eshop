@@ -22,11 +22,21 @@ FROM alpine:latest
 # Set the working directory inside the container
 WORKDIR /root/
 
-# Copy the binary from the builder stage
+# Install any dependencies needed for migrations (e.g., bash, psql)
+RUN apk update && apk add --no-cache bash postgresql-client
+
+# Copy the backend binary and the wait-for-it script
 COPY --from=builder /app/backend .
+COPY wait-for-it.sh /usr/local/bin/wait-for-it
+
+# Copy the migration script (migrations.sql) from builder stage
+COPY --from=builder /app/migrations.sql /app/migrations.sql
 
 # Expose the port your app runs on (8080 for Gin)
 EXPOSE 8080
 
-# Run the app
-CMD ["./backend"]
+# Set entrypoint to run the migration followed by the app startup
+CMD bash -c "export PGPASSWORD=$DB_PASSWORD && psql -h $DB_HOST -U $DB_USER -d $DB_NAME -f /app/migrations.sql && ./backend"
+
+# Use wait-for-it to wait for the database to be available before starting the backend
+CMD ["sh", "-c", "wait-for-it db:5432 --timeout=60 -- ./backend"]
