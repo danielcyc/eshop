@@ -39,4 +39,4 @@ EXPOSE 8080
 CMD bash -c "export PGPASSWORD=$DB_PASSWORD && psql -h $DB_HOST -U $DB_USER -d $DB_NAME -f /app/migrations.sql && ./backend"
 
 # Use wait-for-it to wait for the database to be available before starting the backend
-CMD ["sh", "-c", "wait-for-it db:5432 --timeout=60 -- ./backend"]
+CMD ["sh", "-c", "wait-for-it db:5432 --timeout=0 -- ./backend"]
