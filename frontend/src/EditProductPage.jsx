@@ -37,10 +37,18 @@ export default function EditProductPage() {
 
   const fetchProducts = () => {
     fetch("http://localhost:8080/products")
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Server Error");
+        }
+        return res.json();
+      })
       .then((data) => {
         setProducts(data);
         setFilteredProducts(data);
+      })
+      .catch((e) => {
+        messageApi.error(e.message);
       });
   };
 

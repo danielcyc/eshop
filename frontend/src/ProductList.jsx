@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Card, Row, Col, Button, Input, Select, Modal } from "antd";
+import { Card, Row, Col, Button, Input, Select, Modal, message } from "antd";
 
 const { Search } = Input;
 const { Option } = Select;
@@ -11,6 +11,7 @@ export default function ProductList({ onEdit }) {
   const [sortOption, setSortOption] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
+  const [messageApi, contextHolder] = message.useMessage();
 
   useEffect(() => {
     fetchProducts();
@@ -22,10 +23,18 @@ export default function ProductList({ onEdit }) {
 
   const fetchProducts = () => {
     fetch("http://localhost:8080/products")
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Server Error");
+        }
+        return res.json();
+      })
       .then((data) => {
         setProducts(data);
         setFilteredProducts(data);
+      })
+      .catch((e) => {
+        messageApi.error(e.message);
       });
   };
 
@@ -54,6 +63,8 @@ export default function ProductList({ onEdit }) {
 
   return (
     <div>
+      {contextHolder}
+
       <div
         style={{
           display: "flex",
